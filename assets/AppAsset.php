@@ -18,9 +18,13 @@ class AppAsset extends AssetBundle
     public $basePath = '@webroot';
     public $baseUrl = '@web';
     public $css = [
+        'css/bootstrap-datetimepicker.min.css',
         'css/site.css',
     ];
     public $js = [
+        'js/moment.min.js',
+        'js/bootstrap-datetimepicker.min.js',
+        'js/todo.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

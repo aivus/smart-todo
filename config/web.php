@@ -32,6 +32,18 @@ $config = [
             ],
         ],
         'db' => require(__DIR__ . '/db.php'),
+        'mongodb' => [
+            'class' => '\yii\mongodb\Connection',
+            'dsn' => 'mongodb://127.0.0.1:27017/smart-todo',
+        ],
+        'urlManager' => [
+            'enablePrettyUrl' => true,
+            'showScriptName' => false,
+            'rules' =>  array(
+                '/api/tasks'                =>  '/api/tasks',
+                '/api/tasks/<id:[0-9a-f]+>' =>  '/api/tasks'
+            ),
+        ],
     ],
     'params' => $params,
 ];
