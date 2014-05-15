@@ -23,31 +23,34 @@ class ApiController extends Controller
                         'result'    =>  1,
                         'tasks'     =>  $collection->find()->sort(array('date' => 1)),
                     );
+
                 case 'POST':
                     // Create new
                     /* @var $collection Collection */
                     $collection = Yii::$app->mongodb->getCollection('tasks');
-                    $collection->insert(array('text' => $post['text'], 'status' => $post['status'], 'date' => new \MongoDate(strtotime($post['date']))));
-                    return array('result' => 1);
+                    try {
+                        $collection->insert(array('text' => $post['text'], 'status' => $post['status'], 'date' => new \MongoDate(strtotime($post['date']))));
+                        return array('result' => 1);
+                    } catch (Exception $ex) {
+                        Yii::$app->response->setStatusCode(403);
+                        return array('result' => 0);
+                    }
+
                 case 'DELETE':
                     /* @var $collection Collection */
                     $collection = Yii::$app->mongodb->getCollection('tasks');
-                    $result = $collection->drop();
-                    if ($result) {
-                        $return = 1;
+                    $dropResult = $collection->drop();
+
+                    if ($dropResult) {
+                        return array('result' => 1);
                     } else {
                         Yii::$app->response->setStatusCode(403);
-                        $return = 0;
+                        return array('result' => 0);
                     }
-                    return array(
-                        'result' => $return
-                    );
+
                 default:
                     Yii::$app->response->setStatusCode(405);
-                    return array(
-                        'result' => 0,
-                        'reason' => 'Unknown method'
-                    );
+                    return array('result' => 0);
             }
         } else {
             switch($method) {
@@ -67,10 +70,7 @@ class ApiController extends Controller
                         return array('result' => 1);
                     } else {
                         Yii::$app->response->setStatusCode(400);
-                        return array(
-                            'result' => 0,
-                            'reason' => 'Record doesn\'t exist'
-                        );
+                        return array('result' => 0);
                     }
             }
         }

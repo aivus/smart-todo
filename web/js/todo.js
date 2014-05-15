@@ -56,11 +56,7 @@ $(document).ready(function(){
 
     // Fetch new task list from server
     function updateTaskList() {
-        $.ajax({
-            type: 'GET',
-            url: "/api/tasks",
-            dataType: "json"
-        }).done(function(data) {
+        makeApiRequest('GET', null, function(data) {
                 if(data.result === 1) {
                     // Clean old data
                     $('#tasksArea').empty();
