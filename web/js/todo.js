@@ -39,6 +39,12 @@ $(document).ready(function(){
         modal.find('#saveBtn').data('type', 'create');
     });
 
+    $('#dropTasks').click(function(){
+        makeApiRequest('DELETE', null, function(){
+            $('#tasksArea').empty();
+        });
+    });
+
     $(document).on('click', '.task-complete', function(){
         var id = $(this).attr('id');
         makeApiRequest('DELETE', {id: id}, function(){
@@ -84,6 +90,10 @@ $(document).ready(function(){
     }
 
     function makeApiRequest(method, data, success, fail) {
+        // Check input parameters
+        data = data || {};
+        success = success || function(){};
+        fail = fail || function(){};
         var id = data.id || '';
         delete data.id;
 

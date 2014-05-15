@@ -10,6 +10,7 @@ $this->title = 'SMART TODO List';
     <div class="body-content">
         <!-- Create new task button -->
         <button type="button" class="btn btn-primary" id="createTask" data-toggle="modal" data-target="#editModal">Create new task</button>
+        <button type="button" class="btn btn-danger" id="dropTasks">REMOVE ALL TASKS</button>
 
         <h1>Your todo tasks:</h1>
 

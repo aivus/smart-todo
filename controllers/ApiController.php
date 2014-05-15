@@ -23,14 +23,25 @@ class ApiController extends Controller
                         'result'    =>  1,
                         'tasks'     =>  $collection->find()->sort(array('date' => 1)),
                     );
-                    break;
                 case 'POST':
                     // Create new
                     /* @var $collection Collection */
                     $collection = Yii::$app->mongodb->getCollection('tasks');
                     $collection->insert(array('text' => $post['text'], 'status' => $post['status'], 'date' => new \MongoDate(strtotime($post['date']))));
                     return array('result' => 1);
-                    break;
+                case 'DELETE':
+                    /* @var $collection Collection */
+                    $collection = Yii::$app->mongodb->getCollection('tasks');
+                    $result = $collection->drop();
+                    if ($result) {
+                        $return = 1;
+                    } else {
+                        Yii::$app->response->setStatusCode(403);
+                        $return = 0;
+                    }
+                    return array(
+                        'result' => $return
+                    );
                 default:
                     Yii::$app->response->setStatusCode(405);
                     return array(
