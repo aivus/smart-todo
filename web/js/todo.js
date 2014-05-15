@@ -45,7 +45,7 @@ $(document).ready(function(){
         });
     });
 
-    $(document).on('click', '.task-complete', function(){
+    $(document).on('click', '.task-drop', function(){
         var id = $(this).attr('id');
         makeApiRequest('DELETE', {id: id}, function(){
             $('#task-' + id).fadeOut();
@@ -69,7 +69,7 @@ $(document).ready(function(){
                         block.attr('id', 'task-' + dbId);
 
                         // Set id for complete button
-                        block.find('.task-complete').attr('id', dbId);
+                        block.find('.task-drop').attr('id', dbId);
                         block.find('.task-edit').attr('id', dbId);
 
                         var desc = block.find('#desc');

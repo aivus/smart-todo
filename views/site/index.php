@@ -63,7 +63,7 @@ $this->title = 'SMART TODO List';
                             <div id="desc" style="word-wrap:break-word;"></div>
                             <div class="text-right">
                                 <button type="button" class="task-edit btn btn-warning">Edit</button>
-                                <button type="button" class="task-complete btn btn-success">Complete</button>
+                                <button type="button" class="task-drop btn btn-danger">Drop</button>
                             </div>
                         </div>
                 </div>
