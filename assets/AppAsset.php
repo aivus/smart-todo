@@ -24,6 +24,8 @@ class AppAsset extends AssetBundle
     public $js = [
         'js/moment.min.js',
         'js/bootstrap-datetimepicker.min.js',
+        'js/datetimeformat.js',
+        'js/readmore.js',
         'js/todo.js',
     ];
     public $depends = [

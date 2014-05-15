@@ -3,7 +3,6 @@
 namespace app\controllers;
 
 use yii\mongodb\Collection;
-use yii\mongodb\Query;
 use yii\rest\Controller;
 use Yii;
 
@@ -18,6 +17,12 @@ class ApiController extends Controller
             switch($method) {
                 case 'GET':
                     // Get all
+                    /* @var $collection Collection */
+                    $collection = Yii::$app->mongodb->getCollection('tasks');
+                    return array(
+                        'result'    =>  1,
+                        'tasks'     =>  $collection->find()->sort(array('date' => 1)),
+                    );
                     break;
                 case 'POST':
                     // Create new
