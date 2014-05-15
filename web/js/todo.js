@@ -16,7 +16,7 @@ $(document).ready(function(){
                 method = 'POST';
                 var text = $('#taskText').val();
                 var date = $('#taskDateTime').val();
-                var status = $('#taskStatus').val();
+                var status = $('#taskStatus').prop('checked');
                 data = {text: text, status: status, date: date};
                 break;
             default:
@@ -67,6 +67,12 @@ $(document).ready(function(){
                         var dbId = value._id.$id;
 
                         block.attr('id', 'task-' + dbId);
+
+                        // Change panel background for completed tasks
+                        if (value.status == 'true') {
+                            block.removeClass('panel-default');
+                            block.addClass('panel-success');
+                        }
 
                         // Set id for complete button
                         block.find('.task-drop').attr('id', dbId);
