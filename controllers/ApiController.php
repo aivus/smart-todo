@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use yii\mongodb\Collection;
+use yii\mongodb\Exception;
 use yii\rest\Controller;
 use Yii;
 
@@ -39,12 +40,10 @@ class ApiController extends Controller
                 case 'DELETE':
                     /* @var $collection Collection */
                     $collection = Yii::$app->mongodb->getCollection('tasks');
-                    $dropResult = $collection->drop();
-
-                    if ($dropResult) {
+                    try {
+                        $dropResult = $collection->drop();
                         return array('result' => 1);
-                    } else {
-                        Yii::$app->response->setStatusCode(403);
+                    } catch(Exception $ex) {
                         return array('result' => 0);
                     }
 
