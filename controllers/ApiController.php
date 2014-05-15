@@ -28,7 +28,7 @@ class ApiController extends Controller
                     // Create new
                     /* @var $collection Collection */
                     $collection = Yii::$app->mongodb->getCollection('tasks');
-                    $collection->insert(['text' => $post['text'], 'status' => $post['status'], 'date' => new \MongoDate(strtotime($post['date']))]);
+                    $collection->insert(array('text' => $post['text'], 'status' => $post['status'], 'date' => new \MongoDate(strtotime($post['date']))));
                     return array('result' => 1);
                     break;
             }
