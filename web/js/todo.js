@@ -7,6 +7,7 @@ $(document).ready(function(){
 
     $('#saveBtn').click(function(){
         var type = $('#saveBtn').data('type');
+
         var method;
         var data;
 
@@ -27,7 +28,6 @@ $(document).ready(function(){
         makeApiRequest(method, data, function() {
             updateTaskList();
             $('#editModal').modal('hide');
-
         }, function() {
             alert('Fail');
         });
@@ -42,7 +42,7 @@ $(document).ready(function(){
     $(document).on('click', '.task-complete', function(){
         var id = $(this).attr('id');
         makeApiRequest('DELETE', {id: id}, function(){
-            $('task-' + id).fadeOut();
+            $('#task-' + id).fadeOut();
         })
     });
 
@@ -67,7 +67,7 @@ $(document).ready(function(){
                         block.attr('id', 'task-' + dbId);
 
                         // Set id for complete button
-                        block.find('.task-compelte').attr('id', dbId);
+                        block.find('.task-complete').attr('id', dbId);
                         block.find('.task-edit').attr('id', dbId);
 
                         var desc = block.find('#desc');
@@ -92,7 +92,7 @@ $(document).ready(function(){
             url: "/api/tasks/" + id,
             data: data,
             dataType: "json"
-        }).done(success, fail);
+        }).done(success).fail(fail);
     }
 
 

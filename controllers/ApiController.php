@@ -31,6 +31,12 @@ class ApiController extends Controller
                     $collection->insert(array('text' => $post['text'], 'status' => $post['status'], 'date' => new \MongoDate(strtotime($post['date']))));
                     return array('result' => 1);
                     break;
+                default:
+                    Yii::$app->response->setStatusCode(405);
+                    return array(
+                        'result' => 0,
+                        'reason' => 'Unknown method'
+                    );
             }
         } else {
             switch($method) {
@@ -38,12 +44,23 @@ class ApiController extends Controller
                     // Get info
                     break;
                 case 'PUT':
-                    echo '123';
                     // Change
                     break;
                 case 'DELETE':
-                    // Delete
-                    break;
+                    /* @var $collection Collection */
+                    $collection = Yii::$app->mongodb->getCollection('tasks');
+                    $cursor = $collection->find(array('_id' => $id));
+
+                    if ($cursor->count() === 1) {
+                        $collection->remove(array('_id' => $id));
+                        return array('result' => 1);
+                    } else {
+                        Yii::$app->response->setStatusCode(400);
+                        return array(
+                            'result' => 0,
+                            'reason' => 'Record doesn\'t exist'
+                        );
+                    }
             }
         }
     }
