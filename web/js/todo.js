@@ -75,7 +75,7 @@ $(document).ready(function(){
         $(modal).find('#saveBtn').data('dbId', id);
         $(modal).find('#taskText').html(taskText);
         $(modal).find('#taskDateTime').val(taskDate);
-        $(modal).find('#taskStatus').prop('checked', taskStatus === 'true');
+        $(modal).find('#taskStatus').prop('checked', (taskStatus == 'true' || taskStatus == true));
 
         $(modal).modal('show');
     });
@@ -107,7 +107,7 @@ $(document).ready(function(){
                         $(block).attr('id', 'task-' + dbId);
 
                         // Change panel background for completed tasks
-                        if (value.status == 'true') {
+                        if (value.status == true) {
                             $(block).removeClass('panel-default');
                             $(block).addClass('panel-success');
                         }
