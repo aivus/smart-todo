@@ -48,7 +48,7 @@ $(document).ready(function(){
         $(modal).find('#taskText').empty();
         $(modal).find('#taskDateTime').empty();
         $(modal).find('#taskStatus').prop('checked', false);
-        
+
         $(modal).modal('show');
     });
 
@@ -64,9 +64,9 @@ $(document).ready(function(){
         var modal = $('#editModal');
         var block = $('#task-' + id);
 
-        var taskText = block.find('#desc').html();
-        var taskDate = block.find('#date').html();
-        var taskStatus = block.data('status');
+        var taskText = $(block).find('#desc').html();
+        var taskDate = $(block).find('#date').html();
+        var taskStatus = $(block).data('status');
 
         // Fill form
         $(modal).find('#editModalLabel').html('Edit task');
@@ -103,24 +103,24 @@ $(document).ready(function(){
                         var block = $('#taskRecordClone').clone();
                         var dbId = value._id.$id;
 
-                        block.attr('id', 'task-' + dbId);
+                        $(block).attr('id', 'task-' + dbId);
 
                         // Change panel background for completed tasks
                         if (value.status == 'true') {
-                            block.removeClass('panel-default');
-                            block.addClass('panel-success');
+                            $(block).removeClass('panel-default');
+                            $(block).addClass('panel-success');
                         }
 
                         // Save status into block data attribute
-                        block.data('status', status);
+                        $(block).data('status', status);
 
-                        block.find('#date').html(date.format('dd.mm.yyyy HH:MM', 'GMT'));
+                        $(block).find('#date').html(date.format('dd.mm.yyyy HH:MM', 'GMT'));
 
                         // Set id for complete button
-                        block.find('.task-drop').attr('id', dbId);
-                        block.find('.task-edit').attr('id', dbId);
+                        $(block).find('.task-drop').attr('id', dbId);
+                        $(block).find('.task-edit').attr('id', dbId);
 
-                        var desc = block.find('#desc');
+                        var desc = $(block).find('#desc');
                         $(desc).html(text);
                         $('#tasksArea').append(block);
 
