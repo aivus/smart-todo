@@ -33,6 +33,7 @@ class ApiController extends Controller
                     $collection = Yii::$app->mongodb->getCollection('tasks');
                     try {
                         $collection->insert(array('text' => $post['text'], 'status' => $post['status'], 'date' => new \MongoDate($date->getTimestamp())));
+                        Yii::$app->response->setStatusCode(201);
                         return array('result' => 1);
                     } catch (Exception $ex) {
                         Yii::$app->response->setStatusCode(403);
@@ -47,6 +48,7 @@ class ApiController extends Controller
                         $dropResult = $collection->drop();
                         return array('result' => 1);
                     } catch(Exception $ex) {
+                        Yii::$app->response->setStatusCode(503);
                         return array('result' => 0);
                     }
 
