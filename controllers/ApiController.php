@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use DateTime;
 use yii\mongodb\Collection;
 use yii\mongodb\Exception;
 use yii\rest\Controller;
@@ -27,10 +28,11 @@ class ApiController extends Controller
 
                 case 'POST':
                     // Create new
+                    $date = DateTime::createFromFormat('d.m.Y H:i', $post['date']);
                     /* @var $collection Collection */
                     $collection = Yii::$app->mongodb->getCollection('tasks');
                     try {
-                        $collection->insert(array('text' => $post['text'], 'status' => $post['status'], 'date' => new \MongoDate(strtotime($post['date']))));
+                        $collection->insert(array('text' => $post['text'], 'status' => $post['status'], 'date' => new \MongoDate($date->getTimestamp())));
                         return array('result' => 1);
                     } catch (Exception $ex) {
                         Yii::$app->response->setStatusCode(403);

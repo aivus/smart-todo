@@ -1,7 +1,7 @@
 $(document).ready(function(){
 
     $('#editModalDateTimePicker').datetimepicker({
-        format: 'DD/MM/YYYY HH:mm',
+        format: 'DD.MM.YYYY HH:mm',
         defaultDate: new moment()
     });
 
@@ -45,11 +45,28 @@ $(document).ready(function(){
         });
     });
 
+    $(document).on('click', '.task-edit', function(){
+        var id = $(this).attr('id');
+        var modal = $('#editModal');
+        var block = $('#task-' + id);
+
+        var taskText = block.find('#desc').html();
+
+        // Fill values from form
+        modal.find('#editModalLabel').html('Edit task');
+        modal.find('#saveBtn').data('type', 'edit');
+        modal.find('#taskText').val();
+        /*
+        makeApiRequest('DELETE', {id: id}, function(){
+            $('#task-' + id).fadeOut();
+        })*/
+    });
+
     $(document).on('click', '.task-drop', function(){
         var id = $(this).attr('id');
         makeApiRequest('DELETE', {id: id}, function(){
             $('#task-' + id).fadeOut();
-        })
+        });
     });
 
     updateTaskList();
@@ -63,6 +80,9 @@ $(document).ready(function(){
 
                     $.each(data.tasks, function(index, value) {
                         var date = new Date(value.date.sec * 1000);
+                        var text = value.text;
+                        var status = value.status;
+
                         var block = $('#taskRecordClone').clone();
                         var dbId = value._id.$id;
 
@@ -74,12 +94,17 @@ $(document).ready(function(){
                             block.addClass('panel-success');
                         }
 
+                        // Save status into block data attribute
+                        block.data('status', status);
+
+                        block.find('#date').html(date.format('dd.mm.yyyy HH:MM', 'GMT'));
+
                         // Set id for complete button
                         block.find('.task-drop').attr('id', dbId);
                         block.find('.task-edit').attr('id', dbId);
 
                         var desc = block.find('#desc');
-                        $(desc).html(value.text);
+                        $(desc).html(text);
                         $('#tasksArea').append(block);
 
                         // Add readmore link
