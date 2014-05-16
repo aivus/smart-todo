@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use DateTime;
+use yii\base\ErrorException;
 use yii\mongodb\Collection;
 use yii\mongodb\Exception;
 use yii\rest\Controller;
@@ -31,12 +32,16 @@ class ApiController extends Controller
                     $date = DateTime::createFromFormat('d.m.Y H:i', $post['date']);
                     /* @var $collection Collection */
                     $collection = Yii::$app->mongodb->getCollection('tasks');
+
                     try {
                         $collection->insert(array('text' => $post['text'], 'status' => $post['status'], 'date' => new \MongoDate($date->getTimestamp())));
                         Yii::$app->response->setStatusCode(201);
                         return array('result' => 1);
                     } catch (Exception $ex) {
                         Yii::$app->response->setStatusCode(403);
+                        return array('result' => 0);
+                    } catch (ErrorException $ex) {
+                        Yii::$app->response->setStatusCode(500);
                         return array('result' => 0);
                     }
 
@@ -63,10 +68,14 @@ class ApiController extends Controller
                     /* @var $collection Collection */
                     $collection = Yii::$app->mongodb->getCollection('tasks');
                     $date = DateTime::createFromFormat('d.m.Y H:i', $post['date']);
+
                     try {
                         $updateResult = $collection->update(array('_id' => $id), array('text' => $post['text'], 'status' => $post['status'], 'date' => new \MongoDate($date->getTimestamp())));
                     } catch(Exception $ex) {
                         $updateResult = false;
+                    } catch (ErrorException $ex) {
+                        Yii::$app->response->setStatusCode(500);
+                        return array('result' => 0);
                     }
 
                     if ($updateResult) {
