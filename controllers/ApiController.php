@@ -40,6 +40,7 @@ class ApiController extends Controller
                     }
 
                 case 'DELETE':
+                    // Delete all
                     /* @var $collection Collection */
                     $collection = Yii::$app->mongodb->getCollection('tasks');
                     try {
@@ -55,11 +56,8 @@ class ApiController extends Controller
             }
         } else {
             switch($method) {
-                case 'GET':
-                    // Get info
-                    break;
-
                 case 'PUT':
+                    // Replace task
                     /* @var $collection Collection */
                     $collection = Yii::$app->mongodb->getCollection('tasks');
                     $date = DateTime::createFromFormat('d.m.Y H:i', $post['date']);
@@ -77,6 +75,7 @@ class ApiController extends Controller
                     }
 
                 case 'DELETE':
+                    // Delete task
                     /* @var $collection Collection */
                     $collection = Yii::$app->mongodb->getCollection('tasks');
                     $cursor = $collection->find(array('_id' => $id));
