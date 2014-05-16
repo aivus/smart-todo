@@ -6,7 +6,8 @@ $(document).ready(function(){
     });
 
     $('#saveBtn').click(function(){
-        var type = $('#saveBtn').data('type');
+        var saveBtn = $('#saveBtn');
+        var type = $(saveBtn).data('type');
 
         var method;
 
@@ -21,7 +22,7 @@ $(document).ready(function(){
                 break;
             case 'edit':
                 method = 'PUT';
-                var dbId = $('#saveBtn').data('dbId');
+                var dbId = $(saveBtn).data('dbId');
                 data.id = dbId;
                 break;
             default:
