@@ -54,7 +54,7 @@ $(document).ready(function(){
 
     $('#dropTasks').click(function(){
         makeApiRequest('DELETE', null, function(){
-            $('#tasksArea').empty();
+            $('#tasksArea').fadeOut();
         });
     });
 
