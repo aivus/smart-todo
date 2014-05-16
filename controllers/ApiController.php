@@ -58,9 +58,24 @@ class ApiController extends Controller
                 case 'GET':
                     // Get info
                     break;
+
                 case 'PUT':
-                    // Change
-                    break;
+                    /* @var $collection Collection */
+                    $collection = Yii::$app->mongodb->getCollection('tasks');
+                    $date = DateTime::createFromFormat('d.m.Y H:i', $post['date']);
+                    try {
+                        $updateResult = $collection->update(array('_id' => $id), array('text' => $post['text'], 'status' => $post['status'], 'date' => new \MongoDate($date->getTimestamp())));
+                    } catch(Exception $ex) {
+                        $updateResult = false;
+                    }
+
+                    if ($updateResult) {
+                        return array('result' => 1);
+                    } else {
+                        Yii::$app->response->setStatusCode(410);
+                        return array('result' => 0);
+                    }
+
                 case 'DELETE':
                     /* @var $collection Collection */
                     $collection = Yii::$app->mongodb->getCollection('tasks');

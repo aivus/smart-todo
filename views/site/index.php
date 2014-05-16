@@ -9,7 +9,7 @@ $this->title = 'SMART TODO List';
 
     <div class="body-content">
         <!-- Create new task button -->
-        <button type="button" class="btn btn-primary" id="createTask" data-toggle="modal" data-target="#editModal">Create new task</button>
+        <button type="button" class="btn btn-primary" id="createTask">Create new task</button>
         <button type="button" class="btn btn-danger" id="dropTasks">REMOVE ALL TASKS</button>
 
         <h1>Your todo tasks:</h1>
@@ -32,7 +32,7 @@ $this->title = 'SMART TODO List';
                                 <textarea id="taskText" class="form-control" rows="10"></textarea>
                             </div>
                             <div class="form-group">
-                                <label for="dateTimeInput">Due date</label>
+                                <label for="taskDateTime">Due date</label>
                                 <div class='input-group date' id='editModalDateTimePicker'>
                                     <input type='text' id="taskDateTime" class="form-control" />
                                     <span class="input-group-addon">

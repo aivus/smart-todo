@@ -9,15 +9,20 @@ $(document).ready(function(){
         var type = $('#saveBtn').data('type');
 
         var method;
-        var data;
+
+        var text = $('#taskText').val();
+        var date = $('#taskDateTime').val();
+        var status = $('#taskStatus').prop('checked');
+        var data = {text: text, status: status, date: date};
 
         switch(type) {
             case 'create':
                 method = 'POST';
-                var text = $('#taskText').val();
-                var date = $('#taskDateTime').val();
-                var status = $('#taskStatus').prop('checked');
-                data = {text: text, status: status, date: date};
+                break;
+            case 'edit':
+                method = 'PUT';
+                var dbId = $('#saveBtn').data('dbId');
+                data.id = dbId;
                 break;
             default:
                 console.error('Unknown type: ' + type);
@@ -37,6 +42,7 @@ $(document).ready(function(){
         var modal = $('#editModal');
         modal.find('#editModalLabel').html('New task');
         modal.find('#saveBtn').data('type', 'create');
+        $(modal).modal('show');
     });
 
     $('#dropTasks').click(function(){
@@ -45,21 +51,25 @@ $(document).ready(function(){
         });
     });
 
+    /* Edit task */
     $(document).on('click', '.task-edit', function(){
         var id = $(this).attr('id');
         var modal = $('#editModal');
         var block = $('#task-' + id);
 
         var taskText = block.find('#desc').html();
+        var taskDate = block.find('#date').html();
+        var taskStatus = block.data('status');
 
-        // Fill values from form
-        modal.find('#editModalLabel').html('Edit task');
-        modal.find('#saveBtn').data('type', 'edit');
-        modal.find('#taskText').val();
-        /*
-        makeApiRequest('DELETE', {id: id}, function(){
-            $('#task-' + id).fadeOut();
-        })*/
+        // Fill form
+        $(modal).find('#editModalLabel').html('Edit task');
+        $(modal).find('#saveBtn').data('type', 'edit');
+        $(modal).find('#saveBtn').data('dbId', id);
+        $(modal).find('#taskText').val(taskText);
+        $(modal).find('#taskDateTime').val(taskDate);
+        $(modal).find('#taskStatus').prop('checked', taskStatus === 'true');
+
+        $(modal).modal('show');
     });
 
     $(document).on('click', '.task-drop', function(){
