@@ -46,8 +46,8 @@ $(document).ready(function(){
 
         // Empty fields
         $(modal).find('#saveBtn').removeData('dbId');
-        $(modal).find('#taskText').empty();
-        $(modal).find('#taskDateTime').empty();
+        $(modal).find('#taskText').val('');
+        $(modal).find('#taskDateTime').val('');
         $(modal).find('#taskStatus').prop('checked', false);
 
         $(modal).modal('show');
