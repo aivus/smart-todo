@@ -40,8 +40,15 @@ $(document).ready(function(){
 
     $('#createTask').click(function(){
         var modal = $('#editModal');
-        modal.find('#editModalLabel').html('New task');
-        modal.find('#saveBtn').data('type', 'create');
+        $(modal).find('#editModalLabel').html('New task');
+        $(modal).find('#saveBtn').data('type', 'create');
+
+        // Empty fields
+        $(modal).find('#saveBtn').removeData('dbId');
+        $(modal).find('#taskText').empty();
+        $(modal).find('#taskDateTime').empty();
+        $(modal).find('#taskStatus').prop('checked', false);
+        
         $(modal).modal('show');
     });
 
