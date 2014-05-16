@@ -45,7 +45,7 @@ class ApiController extends Controller
                     /* @var $collection Collection */
                     $collection = Yii::$app->mongodb->getCollection('tasks');
                     try {
-                        $dropResult = $collection->drop();
+                        $collection->drop();
                         return array('result' => 1);
                     } catch(Exception $ex) {
                         Yii::$app->response->setStatusCode(503);
@@ -80,13 +80,12 @@ class ApiController extends Controller
                     // Delete task
                     /* @var $collection Collection */
                     $collection = Yii::$app->mongodb->getCollection('tasks');
-                    $cursor = $collection->find(array('_id' => $id));
 
-                    if ($cursor->count() === 1) {
+                    try {
                         $collection->remove(array('_id' => $id));
                         return array('result' => 1);
-                    } else {
-                        Yii::$app->response->setStatusCode(400);
+                    } catch(Exception $ex) {
+                        Yii::$app->response->setStatusCode(503);
                         return array('result' => 0);
                     }
             }
