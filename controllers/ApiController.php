@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use DateTime;
 use yii\base\ErrorException;
+use yii\helpers\Html;
 use yii\mongodb\Collection;
 use yii\mongodb\Exception;
 use yii\rest\Controller;
@@ -29,12 +30,14 @@ class ApiController extends Controller
 
                 case 'POST':
                     // Create new
+                    $text = Html::encode($post['text']);
+                    $status = $post['status'] == 'true';
                     $date = DateTime::createFromFormat('d.m.Y H:i', $post['date']);
                     /* @var $collection Collection */
                     $collection = Yii::$app->mongodb->getCollection('tasks');
 
                     try {
-                        $collection->insert(array('text' => $post['text'], 'status' => $post['status'], 'date' => new \MongoDate($date->getTimestamp())));
+                        $collection->insert(array('text' => $text, 'status' => $status, 'date' => new \MongoDate($date->getTimestamp())));
                         Yii::$app->response->setStatusCode(201);
                         return array('result' => 1);
                     } catch (Exception $ex) {
@@ -67,10 +70,12 @@ class ApiController extends Controller
                     // Replace task
                     /* @var $collection Collection */
                     $collection = Yii::$app->mongodb->getCollection('tasks');
+                    $text = Html::encode($post['text']);
+                    $status = $post['status'] == 'true';
                     $date = DateTime::createFromFormat('d.m.Y H:i', $post['date']);
 
                     try {
-                        $updateResult = $collection->update(array('_id' => $id), array('text' => $post['text'], 'status' => $post['status'], 'date' => new \MongoDate($date->getTimestamp())));
+                        $updateResult = $collection->update(array('_id' => $id), array('text' => $text, 'status' => $status, 'date' => new \MongoDate($date->getTimestamp())));
                     } catch(Exception $ex) {
                         $updateResult = false;
                     } catch (ErrorException $ex) {

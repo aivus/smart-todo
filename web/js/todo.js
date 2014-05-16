@@ -73,7 +73,7 @@ $(document).ready(function(){
         $(modal).find('#editModalLabel').html('Edit task');
         $(modal).find('#saveBtn').data('type', 'edit');
         $(modal).find('#saveBtn').data('dbId', id);
-        $(modal).find('#taskText').val(taskText);
+        $(modal).find('#taskText').html(taskText);
         $(modal).find('#taskDateTime').val(taskDate);
         $(modal).find('#taskStatus').prop('checked', taskStatus === 'true');
 
@@ -127,7 +127,7 @@ $(document).ready(function(){
 
                         // Add readmore link
                         $(desc).readmore({
-                            maxHeight: 40
+                            maxHeight: 50
                         });
                     });
                 }
