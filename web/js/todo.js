@@ -26,7 +26,9 @@ $(document).ready(function(){
                 data.id = dbId;
                 break;
             default:
-                console.error('Unknown type: ' + type);
+                if (window.console && console.log) {
+                    console.error('Unknown type: ' + type);
+                }
                 return;
         }
 
