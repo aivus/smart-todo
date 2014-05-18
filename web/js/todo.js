@@ -4,8 +4,7 @@ $(document).ready(function(){
     var etag;
 
     $('#editModalDateTimePicker').datetimepicker({
-        format: 'DD.MM.YYYY HH:mm',
-        defaultDate: new moment()
+        format: 'DD.MM.YYYY HH:mm'
     });
 
     $('#synchronizedLabel').find('.close').click(function(){
@@ -55,14 +54,19 @@ $(document).ready(function(){
 
     $('#createTask').click(function(){
         var modal = $('#editModal');
+        var date = (new moment()).format('DD.MM.YYYY HH:mm');
         $(modal).find('#editModalLabel').html('New task');
         $(modal).find('#saveBtn').data('type', 'create');
 
-        // Empty fields
+        // Fill fields
         $(modal).find('#saveBtn').removeData('dbId');
         $(modal).find('#taskText').val('');
-        $(modal).find('#taskDateTime').val((new moment()).format('DD.MM.YYYY HH:mm'));
+        $(modal).find('#taskDateTime').val(date);
         $(modal).find('#taskStatus').prop('checked', false);
+
+        // Set DateTimePicker
+        var picker = $('#editModalDateTimePicker').data("DateTimePicker");
+        picker.setDate(date);
 
         $(modal).modal('show');
     });
@@ -104,6 +108,10 @@ $(document).ready(function(){
         $(modal).find('#taskText').val(taskText);
         $(modal).find('#taskDateTime').val(taskDate);
         $(modal).find('#taskStatus').prop('checked', (taskStatus == 'true' || taskStatus == true));
+
+        // Set DateTimePicker
+        var picker = $('#editModalDateTimePicker').data("DateTimePicker");
+        picker.setDate(taskDate);
 
         $(modal).modal('show');
     });
