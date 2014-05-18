@@ -92,6 +92,22 @@ class ApiController extends Controller
             }
         } else {
             switch($method) {
+                case 'GET':
+                    /* @var $collection Collection */
+                    $collection = Yii::$app->mongodb->getCollection('tasks');
+                    $tasksCursor = $collection->find(array('_id' => new \MongoId($id)))->limit(1);
+                    if ($tasksCursor->count() > 0) {
+                        return array(
+                            'result' => 1,
+                            'task'   => $tasksCursor
+                        );
+                    } else {
+                        Yii::$app->response->setStatusCode(404);
+                        return array(
+                            'result' => 0
+                        );
+                    }
+                    break;
                 case 'PUT':
                     // Replace task
                     /* @var $collection Collection */
@@ -99,6 +115,14 @@ class ApiController extends Controller
                     $text = Html::encode($post['text']);
                     $status = $post['status'] == 'true';
                     $date = DateTime::createFromFormat('d.m.Y H:i', $post['date']);
+
+                    if (array_key_exists('lastModified', $post) && !array_key_exists('force', $post)) {
+                        $task = $collection->find(array('$and' => array(array('_id' => new \MongoId($id)), array('lastModified' => (int)$post['lastModified']))))->limit(1);
+                        if ($task->count() === 0) {
+                            Yii::$app->response->setStatusCode(409);
+                            return;
+                        }
+                    }
 
                     try {
                         $updateResult = $collection->update(array('_id' => $id), array('text' => $text, 'status' => $status, 'date' => new \MongoDate($date->getTimestamp()), 'lastModified' => time()));

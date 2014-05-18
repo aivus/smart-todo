@@ -31,6 +31,8 @@ $(document).ready(function(){
                 method = 'PUT';
                 var dbId = $(saveBtn).data('dbId');
                 data.id = dbId;
+                var lastModified = $(saveBtn).data('lastModified');
+                data.lastModified = lastModified;
                 break;
             default:
                 if (window.console && console.log) {
@@ -38,7 +40,6 @@ $(document).ready(function(){
                 }
                 return;
         }
-
 
         makeApiRequest(method, data, function() {
             // Success
@@ -93,10 +94,12 @@ $(document).ready(function(){
         var taskText = $(block).find('#desc').text();
         var taskDate = $(block).find('#date').html();
         var taskStatus = $(block).data('status');
+        var lastModified = $(block).find('#modified').data('lastModified');
 
         // Fill form
         $(modal).find('#editModalLabel').html('Edit task');
         $(modal).find('#saveBtn').data('type', 'edit');
+        $(modal).find('#saveBtn').data('lastModified', lastModified);
         $(modal).find('#saveBtn').data('dbId', id);
         $(modal).find('#taskText').val(taskText);
         $(modal).find('#taskDateTime').val(taskDate);
@@ -121,6 +124,27 @@ $(document).ready(function(){
                 }
             });
         });
+    });
+
+    /* Conflict modal */
+    $(document).on('click', '.mine', function(){
+        var tmpNs = $.initNamespaceStorage('smart-todo-conflicts')
+        var index = $(this).data('id');
+        var request = tmpNs.localStorage.get(index);
+        request.data.force = 1; // Force update
+        makeApiRequest(request.method, request.data, function(){
+            tmpNs.localStorage.remove(index);
+            updateTaskList();
+        });
+        $('#conflict-' + index).modal('hide');
+    });
+
+    $(document).on('click', '.their', function(){
+        var tmpNs = $.initNamespaceStorage('smart-todo-conflicts')
+        var index = $(this).data('id');
+        tmpNs.localStorage.remove(index);
+        $('#conflict-' + index).modal('hide');
+        updateTaskList();
     });
 
     setInterval(updateTaskList, 5000);
@@ -203,6 +227,7 @@ $(document).ready(function(){
 
         $(block).find('#date').html(date.format('dd.mm.yyyy HH:MM', 'GMT'));
         var lastModifiedDate = new Date(lastModified * 1000);
+        $(block).find('#modified').data('lastModified', lastModified);
         $(block).find('#modified').html(lastModifiedDate.format('dd.mm.yyyy HH:MM'));
 
         var desc = $(block).find('#desc');
@@ -219,7 +244,7 @@ $(document).ready(function(){
 
         var ns = $.initNamespaceStorage('smart-todo');
         var id = Math.random().toString().substr(2);
-        data.lastModified = parseInt((new Date()).getTime() / 1000);  // Replace lastModified on current time
+        var lastModified = parseInt((new Date()).getTime() / 1000);  // Replace lastModified on current time
         ns.localStorage.set(id, {method: method, data: data});
 
         var block;
@@ -241,7 +266,7 @@ $(document).ready(function(){
 
         // Encode html chars
         var text = $('<div/>').text(data.text).html();
-        fillRecord(block, text, date, data.status, data.lastModified);
+        fillRecord(block, text, date, data.status, lastModified);
 
         // Append new record
         if (!data.id) {
@@ -256,12 +281,39 @@ $(document).ready(function(){
                 // Success
                 ns.localStorage.remove(index);
                 if (ns.localStorage.keys().length == 0) {
-                    $('#synchronizedLabel').fadeIn();
-                    $('#lostConnectionLabel').fadeOut();
                     updateTaskList();
                 }
+            }, function(jqXHR, textStatus, errorThrown) {
+                // Conflict
+                if (jqXHR.status == 409) {
+                    // Get info
+                    makeApiRequest('GET', {id: value.data.id}, function(data){
+                        var tmpNs = $.initNamespaceStorage('smart-todo-conflicts')
+                        tmpNs.localStorage.set(index, ns.localStorage.get(index));
+                        ns.localStorage.remove(index);
+
+                        var modal = $('#conflictModal').clone();
+                        $(modal).attr('id', 'conflict-' + index);
+                        $(modal).find('.their').data('id', index);
+                        $(modal).find('.mine').data('id', index);
+                        $(modal).find('#theirText').html(data.task[value.data.id].text);
+
+                        // Date
+                        var date = new Date(data.task[value.data.id].date.sec * 1000);
+                        $(modal).find('#theirDate').html(date.format('dd.mm.yyyy HH:MM', 'GMT'));
+
+                        $(modal).modal('show');
+                    }, function(jqXHR){
+                        //Fail
+                        if (jqXHR.status == 404) {
+                            ns.localStorage.remove(index);
+                        }
+                    });
+                }
             }, function() {
-                // Error
+                // Always
+                $('#synchronizedLabel').fadeIn();
+                $('#lostConnectionLabel').fadeOut();
             });
         });
     }

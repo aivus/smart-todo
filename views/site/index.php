@@ -57,6 +57,28 @@ $this->title = 'SMART TODO List';
             </div>
         </div>
 
+        <!-- Conflict modal -->
+        <div class="modal fade" id="conflictModal" tabindex="-1" role="dialog" aria-labelledby="conflictModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Conflict resolver</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Both modified detected. Their data below:
+                            <div id="theirDate"></div>
+                            <div id="theirText"></div>
+                        </p>
+                        <div class="text-center">
+                            <button type="button" class="btn btn-primary their">Their</button>
+                            <button type="button" class="btn btn-success mine">Mine</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Element for clone -->
         <div class="hide">
             <div class="panel panel-default" id="taskRecordClone">
