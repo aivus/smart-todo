@@ -90,7 +90,7 @@ $(document).ready(function(){
         var modal = $('#editModal');
         var block = $('#task-' + id);
 
-        var taskText = $(block).find('#desc').html();
+        var taskText = $(block).find('#desc').text();
         var taskDate = $(block).find('#date').html();
         var taskStatus = $(block).data('status');
 
@@ -98,7 +98,7 @@ $(document).ready(function(){
         $(modal).find('#editModalLabel').html('Edit task');
         $(modal).find('#saveBtn').data('type', 'edit');
         $(modal).find('#saveBtn').data('dbId', id);
-        $(modal).find('#taskText').html(taskText);
+        $(modal).find('#taskText').val(taskText);
         $(modal).find('#taskDateTime').val(taskDate);
         $(modal).find('#taskStatus').prop('checked', (taskStatus == 'true' || taskStatus == true));
 
@@ -223,6 +223,7 @@ $(document).ready(function(){
         // New offline records can't be modified
         if (!data.id) {
             block = $('#taskRecordClone').clone();
+            $(block).attr('id', 'task-' + id);
 
             // Remove drop/edit buttons
             $(block).find('.task-drop').remove();
