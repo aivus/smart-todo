@@ -1,5 +1,8 @@
 $(document).ready(function(){
 
+    // Value of Last-Modified header for GET requests
+    var lastModified;
+
     $('#editModalDateTimePicker').datetimepicker({
         format: 'DD.MM.YYYY HH:mm',
         defaultDate: new moment()
@@ -36,8 +39,10 @@ $(document).ready(function(){
         makeApiRequest(method, data, function() {
             updateTaskList();
             $('#editModal').modal('hide');
-        }, function() {
-            alert('Fail');
+        }, function(jqXHR, textStatus, errorThrown) {
+            var ns = $.initNamespaceStorage('smart-todo');
+            $('#lostConnectionLabel').fadeIn('slow');
+            $('#editModal').modal('hide');
         });
     });
 
@@ -57,7 +62,13 @@ $(document).ready(function(){
 
     $('#dropTasks').click(function(){
         makeApiRequest('DELETE', null, function(){
-            $('#tasksArea').fadeOut();
+            var taskArea = $('#tasksArea');
+            $(taskArea).fadeOut({
+                done: function(){
+                    $(taskArea).empty();
+                    $(taskArea).show();
+                }
+            });
         });
     });
 
@@ -85,23 +96,52 @@ $(document).ready(function(){
     $(document).on('click', '.task-drop', function(){
         var id = $(this).attr('id');
         makeApiRequest('DELETE', {id: id}, function(){
-            $('#task-' + id).fadeOut();
+            var task = $('#task-' + id);
+
+            $(task).fadeOut({
+                done: function(){
+                    $(task).remove();
+                }
+            });
+
         });
     });
 
+    setInterval(updateTaskList, 5000);
     updateTaskList();
 
     // Fetch new task list from server
     function updateTaskList() {
-        makeApiRequest('GET', null, function(data) {
-                if(data.result === 1) {
-                    // Clean old data
-                    $('#tasksArea').empty();
 
-                    $.each(data.tasks, function(index, value) {
+        // Set If-Modified-Since header
+        var headers = {};
+        if (lastModified) {
+            headers = {"If-Modified-Since":  lastModified};
+        }
+
+        makeApiRequest('GET', null, function(data, textStatus, jqXHR) {
+
+                // Not modified. Skip...
+                if (jqXHR.status == 304) {
+                    return;
+                }
+
+                // Clean old data
+                $('#tasksArea').empty();
+
+                if(data.result === 1) {
+                    // Sort by date
+                    var tasksArray = sortObject(data.tasks, function (a, b) {
+                        return a.value.date.sec - b.value.date.sec;
+                    });
+
+                    $.each(tasksArray, function(index, value) {
+                        value = value.value;
+
                         var date = new Date(value.date.sec * 1000);
                         var text = value.text;
                         var status = value.status;
+                        var localLastModified = value.lastModified;
 
                         var block = $('#taskRecordClone').clone();
                         var dbId = value._id.$id;
@@ -127,20 +167,28 @@ $(document).ready(function(){
                         $(desc).html(text);
                         $('#tasksArea').append(block);
 
+                        // Save lastModified
+                        if (!lastModified || localLastModified > lastModified){
+                            lastModified = localLastModified;
+                        }
+
                         // Add readmore link
                         $(desc).readmore({
                             maxHeight: 50
                         });
                     });
+                } else {
+                    lastModified = null;
                 }
-        });
+        }, null, headers);
     }
 
-    function makeApiRequest(method, data, success, fail) {
+    function makeApiRequest(method, data, success, fail, headers) {
         // Check input parameters
         data = data || {};
         success = success || function(){};
         fail = fail || function(){};
+        headers = headers || {};
         var id = data.id || '';
         delete data.id;
 
@@ -148,9 +196,22 @@ $(document).ready(function(){
             type: method,
             url: "/api/tasks/" + id,
             data: data,
-            dataType: "json"
+            dataType: "json",
+            headers: headers
         }).done(success).fail(fail);
     }
 
-
+    function sortObject(obj, sortFunc) {
+        var arr = [];
+        for (var prop in obj) {
+            if (obj.hasOwnProperty(prop)) {
+                arr.push({
+                    'key': prop,
+                    'value': obj[prop]
+                });
+            }
+        }
+        arr.sort(sortFunc);
+        return arr; // returns array
+    }
 });

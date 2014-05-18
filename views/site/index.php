@@ -8,6 +8,7 @@ $this->title = 'SMART TODO List';
 
 
     <div class="body-content">
+        <div id="lostConnectionLabel" class="alert alert-danger" style="display:none;"><strong>Connection lost.</strong> Sorry, but we lose connection to the server. Don't worry, <strong>all your changes are saved</strong>. After reconnection, your changes will be synchronized</div>
         <!-- Create new task button -->
         <button type="button" class="btn btn-primary" id="createTask">Create new task</button>
         <button type="button" class="btn btn-danger" id="dropTasks">REMOVE ALL TASKS</button>

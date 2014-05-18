@@ -23,10 +23,32 @@ class ApiController extends Controller
                     // Get all
                     /* @var $collection Collection */
                     $collection = Yii::$app->mongodb->getCollection('tasks');
-                    return array(
-                        'result'    =>  1,
-                        'tasks'     =>  $collection->find()->sort(array('date' => 1)),
-                    );
+                    $ifModified = Yii::$app->request->getHeaders()->get('If-Modified-Since');
+                    $tasks = $collection->find()->sort(array('lastModified' => -1));
+
+                    if ($tasks->hasNext()){
+                        $tasks->next();
+                        $current = $tasks->current();
+
+                        // Send Last-Modified header
+                        Yii::$app->response->headers->add('Last-Modified', $current['lastModified']);
+
+                        // Check If-Modified-Since header
+                        if ($ifModified && $ifModified == $current['lastModified']) {
+                            Yii::$app->response->setStatusCode(304);
+                            return;
+                        }
+
+                        return array(
+                            'result'    =>  1,
+                            'tasks'     =>  $tasks,
+                        );
+                    } else {
+                        return array(
+                            'result'    =>  0,
+                        );
+                    }
+
 
                 case 'POST':
                     // Create new
@@ -37,7 +59,7 @@ class ApiController extends Controller
                     $collection = Yii::$app->mongodb->getCollection('tasks');
 
                     try {
-                        $collection->insert(array('text' => $text, 'status' => $status, 'date' => new \MongoDate($date->getTimestamp())));
+                        $collection->insert(array('text' => $text, 'status' => $status, 'date' => new \MongoDate($date->getTimestamp()), 'lastModified' => time()));
                         Yii::$app->response->setStatusCode(201);
                         return array('result' => 1);
                     } catch (Exception $ex) {
@@ -75,7 +97,7 @@ class ApiController extends Controller
                     $date = DateTime::createFromFormat('d.m.Y H:i', $post['date']);
 
                     try {
-                        $updateResult = $collection->update(array('_id' => $id), array('text' => $text, 'status' => $status, 'date' => new \MongoDate($date->getTimestamp())));
+                        $updateResult = $collection->update(array('_id' => $id), array('text' => $text, 'status' => $status, 'date' => new \MongoDate($date->getTimestamp()), 'lastModified' => time()));
                     } catch(Exception $ex) {
                         $updateResult = false;
                     } catch (ErrorException $ex) {
