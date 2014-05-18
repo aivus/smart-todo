@@ -22,6 +22,7 @@ class AppAsset extends AssetBundle
         'css/site.css',
     ];
     public $js = [
+        'js/jquery.storageapi.min.js',
         'js/moment.min.js',
         'js/bootstrap-datetimepicker.min.js',
         'js/datetimeformat.js',

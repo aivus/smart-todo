@@ -40,8 +40,7 @@ $(document).ready(function(){
             updateTaskList();
             $('#editModal').modal('hide');
         }, function(jqXHR, textStatus, errorThrown) {
-            var ns = $.initNamespaceStorage('smart-todo');
-            $('#lostConnectionLabel').fadeIn('slow');
+            apiFallback(method, data);
             $('#editModal').modal('hide');
         });
     });
@@ -61,7 +60,9 @@ $(document).ready(function(){
     });
 
     $('#dropTasks').click(function(){
-        makeApiRequest('DELETE', null, function(){
+        var method = 'DELETE';
+        var data = null;
+        makeApiRequest(method, data, function(){
             var taskArea = $('#tasksArea');
             $(taskArea).fadeOut({
                 done: function(){
@@ -69,6 +70,8 @@ $(document).ready(function(){
                     $(taskArea).show();
                 }
             });
+        }, function(){
+            apiFallback(method, data)
         });
     });
 
@@ -95,7 +98,10 @@ $(document).ready(function(){
 
     $(document).on('click', '.task-drop', function(){
         var id = $(this).attr('id');
-        makeApiRequest('DELETE', {id: id}, function(){
+        var method = 'DELETE';
+        var data = {id: id};
+        makeApiRequest(method, data, function(){
+            // Success
             var task = $('#task-' + id);
 
             $(task).fadeOut({
@@ -103,7 +109,9 @@ $(document).ready(function(){
                     $(task).remove();
                 }
             });
-
+        }, function(){
+            // Fail
+            apiFallback(method, data);
         });
     });
 
@@ -120,6 +128,9 @@ $(document).ready(function(){
         }
 
         makeApiRequest('GET', null, function(data, textStatus, jqXHR) {
+
+                // Check synchronize needed
+                checkSynchronize();
 
                 // Not modified. Skip...
                 if (jqXHR.status == 304) {
@@ -179,19 +190,48 @@ $(document).ready(function(){
         }, null, headers);
     }
 
+    // API fallback
+    function apiFallback(method, data) {
+        // Show warning
+        $('#lostConnectionLabel').fadeIn('slow');
+
+        var ns = $.initNamespaceStorage('smart-todo');
+        var id = Math.random().toString().substr(2);
+
+        ns.localStorage.set(id, {method: method, data: data});
+    }
+
+    function checkSynchronize() {
+        var ns = $.initNamespaceStorage('smart-todo');
+        $.each(ns.localStorage.get(), function(index, value){
+            makeApiRequest(value.method, value.data, function() {
+                // Success
+                ns.localStorage.remove(index);
+                if (ns.localStorage.keys().length == 0) {
+                    $('#synchronizedLabel').fadeIn();
+                    $('#lostConnectionLabel').fadeOut();
+                    updateTaskList();
+                }
+            }, function() {
+                // Error
+            });
+        });
+    }
+
     function makeApiRequest(method, data, success, fail, headers) {
         // Check input parameters
         data = data || {};
+        var workData = jQuery.extend(true, {}, data);   // Clone
         success = success || function(){};
         fail = fail || function(){};
         headers = headers || {};
-        var id = data.id || '';
-        delete data.id;
+        var id = workData.id || '';
+        delete workData.id;
 
         $.ajax({
             type: method,
             url: "/api/tasks/" + id,
-            data: data,
+            data: workData,
             dataType: "json",
             headers: headers
         }).done(success).fail(fail);
