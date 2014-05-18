@@ -35,7 +35,7 @@ class ApiController extends Controller
                         $etag = md5($current['lastModified'] . Yii::$app->params['etag_secret'] . $tasks->count());
 
                         // Send Etag header
-                        Yii::$app->response->headers->add('Etag', $etag);
+                        Yii::$app->response->headers->add('ETag', $etag);
 
                         // Check If-None-Match header
                         if ($ifNoneMatch && $ifNoneMatch == $etag) {

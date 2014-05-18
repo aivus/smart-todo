@@ -146,7 +146,7 @@ $(document).ready(function(){
                 }
 
                 // Save Etag
-                etag = jqXHR.getResponseHeader('Etag');
+                etag = jqXHR.getResponseHeader('ETag');
 
                 // Clean old data
                 $('#tasksArea').empty();
