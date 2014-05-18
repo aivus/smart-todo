@@ -8,6 +8,10 @@ $(document).ready(function(){
         defaultDate: new moment()
     });
 
+    $('#synchronizedLabel').find('.close').click(function(){
+        $('#synchronizedLabel').fadeOut();
+    });
+
     $('#saveBtn').click(function(){
         var saveBtn = $('#saveBtn');
         var type = $(saveBtn).data('type');
