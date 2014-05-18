@@ -1,7 +1,7 @@
 $(document).ready(function(){
 
-    // Value of Last-Modified header for GET requests
-    var lastModified;
+    // Value of Etag header for GET requests
+    var etag;
 
     $('#editModalDateTimePicker').datetimepicker({
         format: 'DD.MM.YYYY HH:mm',
@@ -113,10 +113,10 @@ $(document).ready(function(){
     // Fetch new task list from server
     function updateTaskList() {
 
-        // Set If-Modified-Since header
+        // Set If-None-Match header
         var headers = {};
-        if (lastModified) {
-            headers = {"If-Modified-Since":  lastModified};
+        if (etag) {
+            headers = {"If-None-Match":  etag};
         }
 
         makeApiRequest('GET', null, function(data, textStatus, jqXHR) {
@@ -125,6 +125,9 @@ $(document).ready(function(){
                 if (jqXHR.status == 304) {
                     return;
                 }
+
+                // Save Etag
+                etag = jqXHR.getResponseHeader('Etag');
 
                 // Clean old data
                 $('#tasksArea').empty();
@@ -141,7 +144,6 @@ $(document).ready(function(){
                         var date = new Date(value.date.sec * 1000);
                         var text = value.text;
                         var status = value.status;
-                        var localLastModified = value.lastModified;
 
                         var block = $('#taskRecordClone').clone();
                         var dbId = value._id.$id;
@@ -167,18 +169,12 @@ $(document).ready(function(){
                         $(desc).html(text);
                         $('#tasksArea').append(block);
 
-                        // Save lastModified
-                        if (!lastModified || localLastModified > lastModified){
-                            lastModified = localLastModified;
-                        }
 
                         // Add readmore link
                         $(desc).readmore({
                             maxHeight: 50
                         });
                     });
-                } else {
-                    lastModified = null;
                 }
         }, null, headers);
     }

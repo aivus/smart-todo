@@ -23,18 +23,22 @@ class ApiController extends Controller
                     // Get all
                     /* @var $collection Collection */
                     $collection = Yii::$app->mongodb->getCollection('tasks');
-                    $ifModified = Yii::$app->request->getHeaders()->get('If-Modified-Since');
                     $tasks = $collection->find()->sort(array('lastModified' => -1));
+
+                    $ifNoneMatch = Yii::$app->request->getHeaders()->get('If-None-Match');
 
                     if ($tasks->hasNext()){
                         $tasks->next();
                         $current = $tasks->current();
 
-                        // Send Last-Modified header
-                        Yii::$app->response->headers->add('Last-Modified', $current['lastModified']);
+                        // Calculate Etag
+                        $etag = md5($current['lastModified'] . Yii::$app->params['etag_secret'] . $tasks->count());
 
-                        // Check If-Modified-Since header
-                        if ($ifModified && $ifModified == $current['lastModified']) {
+                        // Send Etag header
+                        Yii::$app->response->headers->add('Etag', $etag);
+
+                        // Check If-None-Match header
+                        if ($ifNoneMatch && $ifNoneMatch == $etag) {
                             Yii::$app->response->setStatusCode(304);
                             return;
                         }
