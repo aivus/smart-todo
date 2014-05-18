@@ -66,10 +66,17 @@ $this->title = 'SMART TODO List';
                     </div>
                     <div class="modal-body">
                         <p>
-                            Both modified detected. Their data below:
-                            <div id="theirDate"></div>
-                            <div id="theirText"></div>
+                            Both modified detected.
                         </p>
+                        <div class="well"><p><strong>Their data:</strong></p>
+                            <strong>Due date:</strong> <div id="theirDate"></div>
+                            <strong>Text:</strong> <div class="well" id="theirText"></div>
+                        </div>
+                        <div class="well"><p><strong>Mine data:</strong></p>
+                            <strong>Due date:</strong> <div id="mineDate"></div>
+                            <strong>Text:</strong> <div class="well" id="mineText"></div>
+                        </div>
+
                         <div class="text-center">
                             <button type="button" class="btn btn-primary their">Their</button>
                             <button type="button" class="btn btn-success mine">Mine</button>

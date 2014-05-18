@@ -308,11 +308,17 @@ $(document).ready(function(){
                         $(modal).attr('id', 'conflict-' + index);
                         $(modal).find('.their').data('id', index);
                         $(modal).find('.mine').data('id', index);
-                        $(modal).find('#theirText').html(data.task[value.data.id].text);
 
+                        // Their
                         // Date
-                        var date = new Date(data.task[value.data.id].date.sec * 1000);
-                        $(modal).find('#theirDate').html(date.format('dd.mm.yyyy HH:MM', 'GMT'));
+                        var theirDate = new Date(data.task[value.data.id].date.sec * 1000);
+                        $(modal).find('#theirText').html(data.task[value.data.id].text);
+                        $(modal).find('#theirDate').html(theirDate.format('dd.mm.yyyy HH:MM', 'GMT'));
+
+                        // Mine
+                        var mineDate = new Date(moment.utc(value.data.date, 'DD.MM.YYYY HH:mm'));
+                        $(modal).find('#mineText').html(value.data.text);
+                        $(modal).find('#mineDate').html(mineDate.format('dd.mm.yyyy HH:MM', 'GMT'));
 
                         $(modal).modal('show');
                     }, function(jqXHR){
