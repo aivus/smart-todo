@@ -37,10 +37,13 @@ $(document).ready(function(){
 
 
         makeApiRequest(method, data, function() {
+            // Success
             updateTaskList();
-            $('#editModal').modal('hide');
         }, function(jqXHR, textStatus, errorThrown) {
+            // Fail
             apiFallback(method, data);
+        }, function () {
+            // Always
             $('#editModal').modal('hide');
         });
     });
@@ -62,7 +65,11 @@ $(document).ready(function(){
     $('#dropTasks').click(function(){
         var method = 'DELETE';
         var data = null;
-        makeApiRequest(method, data, function(){
+        makeApiRequest(method, data, null, function(){
+            // Fail
+            apiFallback(method, data)
+        }, function(){
+            // Always
             var taskArea = $('#tasksArea');
             $(taskArea).fadeOut({
                 done: function(){
@@ -70,8 +77,6 @@ $(document).ready(function(){
                     $(taskArea).show();
                 }
             });
-        }, function(){
-            apiFallback(method, data)
         });
     });
 
@@ -100,18 +105,17 @@ $(document).ready(function(){
         var id = $(this).attr('id');
         var method = 'DELETE';
         var data = {id: id};
-        makeApiRequest(method, data, function(){
-            // Success
+        makeApiRequest(method, data, null, function(){
+            // Fail
+            apiFallback(method, data);
+        }, function(){
+            // Always
             var task = $('#task-' + id);
-
             $(task).fadeOut({
                 done: function(){
                     $(task).remove();
                 }
             });
-        }, function(){
-            // Fail
-            apiFallback(method, data);
         });
     });
 
@@ -178,7 +182,7 @@ $(document).ready(function(){
                         });
                     });
                 }
-        }, null, headers);
+        }, null, null, headers);
     }
 
     function fillRecord(block, text, date, status) {
@@ -250,12 +254,13 @@ $(document).ready(function(){
         });
     }
 
-    function makeApiRequest(method, data, success, fail, headers) {
+    function makeApiRequest(method, data, success, fail, always, headers) {
         // Check input parameters
         data = data || {};
         var workData = jQuery.extend(true, {}, data);   // Clone
         success = success || function(){};
         fail = fail || function(){};
+        always = always || function(){};
         headers = headers || {};
         var id = workData.id || '';
         delete workData.id;
@@ -266,7 +271,7 @@ $(document).ready(function(){
             data: workData,
             dataType: "json",
             headers: headers
-        }).done(success).fail(fail);
+        }).done(success).fail(fail).always(always);
     }
 
     function sortObject(obj, sortFunc) {
