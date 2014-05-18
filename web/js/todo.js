@@ -238,7 +238,10 @@ $(document).ready(function(){
 
         var momentDate = moment.utc(data.date, 'DD.MM.YYYY HH:mm');
         var date = new Date(momentDate);
-        fillRecord(block, data.text, date, data.status, data.lastModified);
+
+        // Encode html chars
+        var text = $('<div/>').text(data.text).html();
+        fillRecord(block, text, date, data.status, data.lastModified);
 
         // Append new record
         if (!data.id) {
