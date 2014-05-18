@@ -159,25 +159,16 @@ $(document).ready(function(){
                         var block = $('#taskRecordClone').clone();
                         var dbId = value._id.$id;
 
+
                         $(block).attr('id', 'task-' + dbId);
 
-                        // Change panel background for completed tasks
-                        if (value.status == true) {
-                            $(block).removeClass('panel-default');
-                            $(block).addClass('panel-success');
-                        }
-
-                        // Save status into block data attribute
-                        $(block).data('status', status);
-
-                        $(block).find('#date').html(date.format('dd.mm.yyyy HH:MM', 'GMT'));
+                        // Fill record
+                        block = fillRecord(block, text, date, status);
 
                         // Set id for complete button
                         $(block).find('.task-drop').attr('id', dbId);
                         $(block).find('.task-edit').attr('id', dbId);
 
-                        var desc = $(block).find('#desc');
-                        $(desc).html(text);
                         $('#tasksArea').append(block);
 
 
@@ -190,15 +181,56 @@ $(document).ready(function(){
         }, null, headers);
     }
 
+    function fillRecord(block, text, date, status) {
+
+        // Change panel background for completed tasks
+        if (status == true) {
+            $(block).removeClass('panel-default');
+            $(block).addClass('panel-success');
+        }
+
+        // Save status into block data attribute
+        $(block).data('status', status);
+
+        $(block).find('#date').html(date.format('dd.mm.yyyy HH:MM', 'GMT'));
+
+        var desc = $(block).find('#desc');
+        $(desc).html(text);
+
+        return block;
+    }
+
     // API fallback
     function apiFallback(method, data) {
         // Show warning
         $('#lostConnectionLabel').fadeIn('slow');
+        $('#synchronizedLabel').fadeOut();
 
         var ns = $.initNamespaceStorage('smart-todo');
         var id = Math.random().toString().substr(2);
-
         ns.localStorage.set(id, {method: method, data: data});
+
+        var block;
+
+        // New offline records can't be modified
+        if (!data.id) {
+            block = $('#taskRecordClone').clone();
+
+            // Remove drop/edit buttons
+            $(block).find('.task-drop').remove();
+            $(block).find('.task-edit').remove();
+        } else {
+            block = $('#task-' + data.id);
+        }
+
+        var momentDate = moment.utc(data.date, 'DD.MM.YYYY HH:mm');
+        var date = new Date(momentDate);
+        fillRecord(block, data.text, date, data.status);
+
+        // Append new record
+        if (!data.id) {
+            $('#tasksArea').append(block);
+        }
     }
 
     function checkSynchronize() {
