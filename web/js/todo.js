@@ -163,6 +163,7 @@ $(document).ready(function(){
                         var date = new Date(value.date.sec * 1000);
                         var text = value.text;
                         var status = value.status;
+                        var lastModified = value.lastModified;
 
                         var block = $('#taskRecordClone').clone();
                         var dbId = value._id.$id;
@@ -171,7 +172,7 @@ $(document).ready(function(){
                         $(block).attr('id', 'task-' + dbId);
 
                         // Fill record
-                        block = fillRecord(block, text, date, status);
+                        block = fillRecord(block, text, date, status, lastModified);
 
                         // Set id for complete button
                         $(block).find('.task-drop').attr('id', dbId);
@@ -189,7 +190,7 @@ $(document).ready(function(){
         }, null, null, headers);
     }
 
-    function fillRecord(block, text, date, status) {
+    function fillRecord(block, text, date, status, lastModified) {
 
         // Change panel background for completed tasks
         if (status == true) {
@@ -201,6 +202,8 @@ $(document).ready(function(){
         $(block).data('status', status);
 
         $(block).find('#date').html(date.format('dd.mm.yyyy HH:MM', 'GMT'));
+        var lastModifiedDate = new Date(lastModified * 1000);
+        $(block).find('#modified').html(lastModifiedDate.format('dd.mm.yyyy HH:MM'));
 
         var desc = $(block).find('#desc');
         $(desc).html(text);
@@ -216,6 +219,7 @@ $(document).ready(function(){
 
         var ns = $.initNamespaceStorage('smart-todo');
         var id = Math.random().toString().substr(2);
+        data.lastModified = (new Date()).getTime() / 1000;  // Replace lastModified on current time
         ns.localStorage.set(id, {method: method, data: data});
 
         var block;
@@ -234,7 +238,7 @@ $(document).ready(function(){
 
         var momentDate = moment.utc(data.date, 'DD.MM.YYYY HH:mm');
         var date = new Date(momentDate);
-        fillRecord(block, data.text, date, data.status);
+        fillRecord(block, data.text, date, data.status, data.lastModified);
 
         // Append new record
         if (!data.id) {

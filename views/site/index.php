@@ -62,7 +62,7 @@ $this->title = 'SMART TODO List';
             <div class="panel panel-default" id="taskRecordClone">
                 <div class="panel-heading">
                         <div class="panel-body">
-                            <div><strong>Due date:</strong> <span id="date"></span></div>
+                            <div><strong>Due date:</strong> <span id="date"></span> | <strong>Last changed:</strong> <span id="modified"></span></div>
                             <pre id="desc" style="word-wrap:break-word;"></pre>
                             <div class="text-right">
                                 <button type="button" class="task-edit btn btn-warning">Edit</button>
