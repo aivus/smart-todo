@@ -62,6 +62,11 @@ class ApiController extends Controller
                     /* @var $collection Collection */
                     $collection = Yii::$app->mongodb->getCollection('tasks');
 
+                    if (!$date) {
+                        Yii::$app->response->setStatusCode(400);
+                        return array('result' => 0);
+                    }
+
                     try {
                         $collection->insert(array('text' => $text, 'status' => $status, 'date' => new \MongoDate($date->getTimestamp()), 'lastModified' => time()));
                         Yii::$app->response->setStatusCode(201);
@@ -115,6 +120,11 @@ class ApiController extends Controller
                     $text = Html::encode($post['text']);
                     $status = $post['status'] == 'true';
                     $date = DateTime::createFromFormat('d.m.Y H:i', $post['date']);
+
+                    if (!$date) {
+                        Yii::$app->response->setStatusCode(400);
+                        return array('result' => 0);
+                    }
 
                     if (array_key_exists('lastModified', $post) && !array_key_exists('force', $post)) {
                         $task = $collection->find(array('$and' => array(array('_id' => new \MongoId($id)), array('lastModified' => (int)$post['lastModified']))))->limit(1);

@@ -45,7 +45,11 @@ $(document).ready(function(){
             updateTaskList();
         }, function(jqXHR, textStatus, errorThrown) {
             // Fail
-            apiFallback(method, data);
+            if (jqXHR == 400) {
+                alert('You sent invalid data. Try again ;)');
+            } else {
+                apiFallback(method, data);
+            }
         }, function () {
             // Always
             $('#editModal').modal('hide');
@@ -317,6 +321,9 @@ $(document).ready(function(){
                             ns.localStorage.remove(index);
                         }
                     });
+                } else if (jqXHR.status == 400) {
+                    ns.localStorage.remove(index);
+                    alert('You sent invalid data. Try again ;)');
                 }
             }, function() {
                 // Always
