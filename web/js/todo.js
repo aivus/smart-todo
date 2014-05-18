@@ -219,7 +219,7 @@ $(document).ready(function(){
 
         var ns = $.initNamespaceStorage('smart-todo');
         var id = Math.random().toString().substr(2);
-        data.lastModified = (new Date()).getTime() / 1000;  // Replace lastModified on current time
+        data.lastModified = parseInt((new Date()).getTime() / 1000);  // Replace lastModified on current time
         ns.localStorage.set(id, {method: method, data: data});
 
         var block;
