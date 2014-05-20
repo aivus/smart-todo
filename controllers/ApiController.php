@@ -83,6 +83,12 @@ class ApiController extends Controller
                     // Delete all
                     /* @var $collection Collection */
                     $collection = Yii::$app->mongodb->getCollection('tasks');
+
+                    // Already dropped
+                    if ($collection->find()->limit(1)->count() === 0) {
+                        return array('result' => 1);
+                    }
+
                     try {
                         $collection->drop();
                         return array('result' => 1);
