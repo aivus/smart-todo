@@ -110,7 +110,15 @@ class ApiController extends Controller
     {
         /* @var $collection Collection */
         $collection = Yii::$app->mongodb->getCollection('tasks');
-        $tasksCursor = $collection->find(array('_id' => new \MongoId($id)))->limit(1);
+        try {
+            $tasksCursor = $collection->find(array('_id' => new \MongoId($id)))->limit(1);
+        } catch (\MongoException $ex) {
+            Yii::$app->response->setStatusCode(404);
+            return array(
+                'result' => 0
+            );
+        }
+
         if ($tasksCursor->count() > 0) {
             return array(
                 'result' => 1,
