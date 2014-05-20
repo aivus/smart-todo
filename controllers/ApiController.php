@@ -12,6 +12,18 @@ use Yii;
 
 class ApiController extends Controller
 {
+    public function verbs()
+    {
+        return array(
+            'create-task'       => ['post'],
+            'get-all-tasks'     => ['get'],
+            'delete-all-tasks'  => ['delete'],
+            'get-one-task'      => ['get'],
+            'put-one-task'      => ['put'],
+            'delete-one-task'   => ['delete']
+        );
+    }
+
     public function actionGetAllTasks()
     {
         /* @var $collection Collection */
