@@ -347,12 +347,16 @@ $(document).ready(function(){
         fail = fail || function(){};
         always = always || function(){};
         headers = headers || {};
-        var id = workData.id || '';
+        var id = '';
+        if (workData.id) {
+            id = '/' + workData.id;
+        }
+
         delete workData.id;
 
         $.ajax({
             type: method,
-            url: "/api/tasks/" + id,
+            url: "/api/tasks" + id,
             data: workData,
             dataType: "json",
             headers: headers

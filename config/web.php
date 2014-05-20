@@ -40,8 +40,12 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' =>  array(
-                '/api/tasks'                =>  '/api/tasks',
-                '/api/tasks/<id:[0-9a-f]+>' =>  '/api/tasks'
+                'POST /api/tasks'                   =>  '/api/create-task',
+                'GET /api/tasks'                    =>  '/api/get-all-tasks',
+                'DELETE /api/tasks'                 =>  '/api/delete-all-tasks',
+                'GET /api/tasks/<id:[0-9a-f]+>'     =>  '/api/get-one-task',
+                'PUT /api/tasks/<id:[0-9a-f]+>'     =>  '/api/put-one-task',
+                'DELETE /api/tasks/<id:[0-9a-f]+>'  =>  '/api/delete-one-task'
             ),
         ],
     ],
