@@ -142,17 +142,24 @@ class ApiController extends Controller
         $status = $post['status'] == 'true';
         $date = DateTime::createFromFormat('d.m.Y H:i', $post['date']);
 
+        // Invalid date
         if (!$date) {
             Yii::$app->response->setStatusCode(400);
             return array('result' => 0);
         }
 
         if (array_key_exists('lastModified', $post) && !array_key_exists('force', $post)) {
-            $task = $collection->find(array('$and' => array(array('_id' => new \MongoId($id)), array('lastModified' => (int)$post['lastModified']))))->limit(1);
+            try {
+                $task = $collection->find(array('$and' => array(array('_id' => new \MongoId($id)), array('lastModified' => (int)$post['lastModified']))))->limit(1);
+            } catch (\MongoException $ex) {
+                return array('result' => 0);
+            }
+
             if ($task->count() === 0) {
                 Yii::$app->response->setStatusCode(409);
                 return;
             }
+
         }
 
         try {
