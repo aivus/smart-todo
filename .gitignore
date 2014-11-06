@@ -1,5 +1,4 @@
 composer.lock
-web/assets
 vendor
 .idea
 composer.phar
